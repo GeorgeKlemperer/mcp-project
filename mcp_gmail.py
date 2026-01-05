@@ -14,11 +14,11 @@ mcp = FastMCP(
   ],
 )
 
-# mcp.add_tool(gmail_tool.send_email, name='Gmail-Send-Email', description='Send an email message in Gmail')
 mcp.add_tool(gmail_tool.get_email_message_details, name='Gmail-Get-Email-Message-Details', description='Get details of an email message in Gmail')
 mcp.add_tool(gmail_tool.get_email_message_body, name='Gmail-Get-Email-Message-Body', description='Get the body of an email message (Gmail)')
 mcp.add_tool(gmail_tool.search_emails, name='Gmail-Search-Emails', description='Search or return emails in Gmail. Defualt is None, which returns all emails.')
-mcp.add_tool(gmail_tool.delete_email_message, name='Gmail-Delete-Email-Message', description='Delete an email message in Gmail.')
+mcp.add_tool(gmail_tool.get_unread_emails, name='Gmail-Get-Unread-Emails', description='Get unread emails from Gmail inbox')
+mcp.add_tool(gmail_tool.create_draft_reply, name='Gmail-Create-Draft-Reply', description='Create a draft reply to an email thread in Gmail')
 
 if __name__ == '__main__': # Stops MCP running on import
     mcp.run()

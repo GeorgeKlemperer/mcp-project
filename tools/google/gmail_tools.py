@@ -54,70 +54,6 @@ class GmailTool:
           allow_interactive=allow_interactive,
       )
 
-
-    def send_email(
-        self,
-        to: str,
-        subject: str,
-        body: str,
-        body_type: Literal['plain', 'html'] = 'plain',
-        attachment_paths: Optional[List] = None
-      ) -> dict:
-        """
-        Send an email using the Gmail API.
-
-        Args:
-          to (str): Recipient email address.
-          subject (str): Email subject.
-          body (str): Email body content.
-          body_type (str): Type of the body content ('plain' or 'html').
-          attachment_paths (list): List of file paths for attachments.
-
-        Returns:
-          dict: Response from the Gmail API.
-        """
-        try:
-          message = MIMEMultipart()
-          message['to'] = to
-          message['subject'] = subject
-
-          if body_type.lower() not in ['plain', 'html']:
-            return 'Error: body_type must be either "plain" or "html".'
-
-          message.attach(MIMEText(body, body_type.lower()))
-
-          if attachment_paths:
-            for attachment_path in attachment_paths:
-              if os.path.exists(attachment_path):
-                filename = os.path.basename(attachment_path)
-
-                with open(attachment_path, "rb") as attachment:
-                  part = MIMEBase("application", "octet-stream")
-                  part.set_payload(attachment.read())
-
-                encoders.encode_base64(part)
-
-                part.add_header(
-                  "Content-Disposition",
-                  f"attachment; filename= {filename}",
-                )
-                
-                message.attach(part)
-              else:
-                return f'File not found - {attachment_path}'
-
-          raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
-
-          response = self.service.users().messages().send(
-            userId='me',
-            body={'raw': raw_message}
-          ).execute()
-
-          return {'msg_id': response['id'], 'status': 'success'}
-        
-        except Exception as e:
-          return {'error': f'An error occurred: {str(e)}', 'status': 'failed'}
-        
     def search_emails(
         self,
         query: Optional[str] = None,
@@ -192,8 +128,10 @@ class GmailTool:
         star = message.get('labelIds', []).count('STARRED') > 0
         label = ', '.join(message.get('labelIds', []))
 
-        body = '<not included>'
-
+        # Add thread_id to the body field or create a new field
+        thread_id = message.get('threadId', 'No thread ID')
+        body = f'<not included> | Thread ID: {thread_id}'
+        
         return EmailMessage(
           msg_id=msg_id,
           subject=subject,
@@ -251,22 +189,128 @@ class GmailTool:
         elif 'body' in payload and 'data' in payload['body']:
           body = base64.urlsafe_b64decode(payload['body']['data']).decode('utf-8')
         return body
-    
-    def delete_email_message(
+
+    def get_unread_emails(
         self,
-        msg_id: str
-      ) -> dict:
+        max_results: Optional[int] = 10
+    ) -> EmailMessages:
         """
-        Delete an email message using its ID.
+        Get unread emails from the user's inbox using the Gmail API.
 
         Args:
-          msg_id (str): The ID of the email message to delete.
+            max_results (int): Maximum number of unread emails to return.
 
         Returns:
-          dict: Response from the Gmail API.
+            EmailMessages: Object containing unread email messages.
         """
         try:
-          self.service.users().messages().delete(userId='me', id=msg_id).execute()
-          return {'msg_id': msg_id, 'status': 'deleted'}
+            # Search for unread emails in inbox
+            result = self.service.users().messages().list(
+                userId='me',
+                q='is:unread',
+                labelIds=['INBOX'],
+                maxResults=max_results if max_results else 10
+            ).execute()
+
+            messages = result.get('messages', [])
+            
+            # Get detailed information for each message
+            email_messages = []
+            for message in messages:
+                msg_id = message['id']
+                msg_details = self.get_email_message_details(msg_id)
+                email_messages.append(msg_details)
+
+            return EmailMessages(
+                count=len(email_messages),
+                messages=email_messages,
+                next_page_token=result.get('nextPageToken')
+            )
+
         except Exception as e:
-          return {'error': f'An error occurred: {str(e)}', 'status': 'failed'}
+            return EmailMessages(
+                count=0,
+                messages=[],
+                next_page_token=None
+            )
+        
+    def create_draft_reply(
+        self,
+        thread_id: str,
+        reply_body: str,
+        body_type: Literal['plain', 'html'] = 'plain'
+    ) -> dict:
+        """
+        Create a draft reply to an email thread using the Gmail API.
+
+        Args:
+            thread_id (str): The thread ID of the original email to reply to.
+            reply_body (str): The body content of the reply.
+            body_type (str): Type of the body content ('plain' or 'html').
+
+        Returns:
+            dict: Response from the Gmail API containing draft details.
+        """
+        try:
+            # Get the original thread to extract reply information
+            thread = self.service.users().threads().get(userId='me', id=thread_id).execute()
+            messages = thread.get('messages', [])
+            
+            if not messages:
+                return {'error': 'No messages found in thread', 'status': 'failed'}
+            
+            # Get the last message in the thread (most recent)
+            original_message = messages[-1]
+            original_payload = original_message['payload']
+            original_headers = original_payload.get('headers', [])
+            
+            # Extract necessary headers for the reply
+            original_subject = next((h['value'] for h in original_headers if h['name'].lower() == 'subject'), '')
+            original_from = next((h['value'] for h in original_headers if h['name'].lower() == 'from'), '')
+            original_to = next((h['value'] for h in original_headers if h['name'].lower() == 'to'), '')
+            original_message_id = next((h['value'] for h in original_headers if h['name'].lower() == 'message-id'), '')
+            
+            # Prepare reply subject
+            reply_subject = original_subject
+            if not reply_subject.lower().startswith('re:'):
+                reply_subject = f"Re: {reply_subject}"
+            
+            # Create the reply message
+            message = MIMEMultipart()
+            message['to'] = original_from  # Reply to the original sender
+            message['subject'] = reply_subject
+            message['In-Reply-To'] = original_message_id  # Threading
+            message['References'] = original_message_id   # Threading
+            
+            if body_type.lower() not in ['plain', 'html']:
+                return {'error': 'body_type must be either "plain" or "html"', 'status': 'failed'}
+
+            # Attach the reply body
+            message.attach(MIMEText(reply_body, body_type.lower()))
+
+            # Encode the message
+            raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+
+            # Create the draft
+            draft_body = {
+                'message': {
+                    'raw': raw_message,
+                    'threadId': thread_id
+                }
+            }
+
+            draft = self.service.users().drafts().create(
+                userId='me',
+                body=draft_body
+            ).execute()
+
+            return {
+                'draft_id': draft['id'],
+                'message_id': draft['message']['id'],
+                'thread_id': draft['message']['threadId'],
+                'status': 'success'
+            }
+
+        except Exception as e:
+            return {'error': f'An error occurred: {str(e)}', 'status': 'failed'}
+        
