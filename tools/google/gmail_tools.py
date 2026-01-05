@@ -41,21 +41,9 @@ class GmailTool:
       """
       Initialize the Gmail API service.
       """
-      # self.service = create_service(
-      #   self.client_secret_file,
-      #   self.API_NAME,
-      #   self.API_VERSION,
-      #   self.SCOPES
-      # )
-
-    #   self.service = create_service(
-    #     self.client_secret_file,
-    #     self.API_NAME,
-    #     self.API_VERSION,
-    #     self.SCOPES,
-    #     allow_interactive=True,   # while you're running manually
-    # )
       
+      # Manual login command to allow non-interactive OAuth:
+      # ALLOW_INTERACTIVE_OAUTH=1 .venv/bin/python mcp_gmail.py
       allow_interactive = os.getenv("ALLOW_INTERACTIVE_OAUTH", "0") == "1"
 
       self.service = create_service(

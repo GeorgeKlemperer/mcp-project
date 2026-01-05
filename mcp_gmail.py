@@ -20,5 +20,5 @@ mcp.add_tool(gmail_tool.get_email_message_body, name='Gmail-Get-Email-Message-Bo
 mcp.add_tool(gmail_tool.search_emails, name='Gmail-Search-Emails', description='Search or return emails in Gmail. Defualt is None, which returns all emails.')
 mcp.add_tool(gmail_tool.delete_email_message, name='Gmail-Delete-Email-Message', description='Delete an email message in Gmail.')
 
-if __name__ == '__main__':
+if __name__ == '__main__': # Stops MCP running on import
     mcp.run()
