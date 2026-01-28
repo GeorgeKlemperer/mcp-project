@@ -45,6 +45,8 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
+or
+pip install -U mcp 'mcp[cli]' google-api-python-client google-auth-httplib2 google-auth-oauthlib
 ```
 
 ### 3. Authentication
