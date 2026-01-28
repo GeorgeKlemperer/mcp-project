@@ -51,7 +51,7 @@ pip install -U mcp 'mcp[cli]' google-api-python-client google-auth-httplib2 goog
 
 ### 3. Authentication
 
-Run the initial authentication setup:
+Run the initial authentication setup (make sure if you have an expired token that it is deleted beforehand):
 
 ```bash
 ALLOW_INTERACTIVE_OAUTH=1 .venv/bin/python mcp_gmail.py
