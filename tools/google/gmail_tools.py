@@ -1,3 +1,5 @@
+# GMail API Tools for MCP
+
 import os
 import base64
 from typing import Literal, Optional, List

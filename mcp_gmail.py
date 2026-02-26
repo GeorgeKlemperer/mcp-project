@@ -1,3 +1,5 @@
+# MCP Server Entry Point
+
 import os
 from mcp.server.fastmcp import FastMCP
 from tools.google import GmailTool
