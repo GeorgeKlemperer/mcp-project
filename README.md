@@ -16,6 +16,8 @@ An MCP (Model Context Protocol) server that allows AI assistants to read Gmail e
 - Gmail account
 - Google Cloud Console project with Gmail API enabled
 - Claude Desktop (for testing with AI assistant)
+- An Anthropic API key ([console.anthropic.com](https://console.anthropic.com))
+- An OpenAI API key ([platform.openai.com](https://platform.openai.com))
 
 ## Setup Instructions
 

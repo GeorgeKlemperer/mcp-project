@@ -1,0 +1,10 @@
+Email Writing Guidelines
+
+When composing emails, always maintain a professional yet friendly tone that reflects well on both yourself and your organization. Use clear, concise language and structure your messages with appropriate greetings and context. Be courteous and respectful in all communications, whether addressing colleagues, clients, or external partners. Ensure your subject lines are descriptive and relevant to help recipients quickly understand the purpose of your message. When addressing concerns or providing feedback, frame your language constructively and offer solutions where possible.
+
+Always conclude your emails with a proper signature that includes your full name and professional title. This helps establish credibility and provides recipients with clear identification of who they're communicating with. Consistency in your email signature creates a professional impression and makes it easy for others to contact you or reference your role within the organization.
+
+Your standard email signature should be:
+
+From R George Klemperer
+Software Engineer
