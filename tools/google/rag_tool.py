@@ -94,31 +94,43 @@ class RAGTool:
                 confidence=0.0
             )
 
+    # def refresh_documents(self) -> dict:
+    #     """
+    #     Re-ingest all documents from the rag-documents folder.
+        
+    #     Returns:
+    #         dict: Status of the refresh operation
+    #     """
+    #     try:
+    #         # Import and run the ingestion process
+    #         from .ingest import load_and_chunk, embed_and_store
+            
+    #         project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    #         documents_dir = os.path.join(project_root, "tools", "google", "rag-documents")
+
+    #         chunks = load_and_chunk(documents_dir)
+    #         embed_and_store(chunks)
+            
+    #         return {
+    #             "status": "success",
+    #             "message": f"Successfully refreshed {len(chunks)} chunks",
+    #             "chunks_count": len(chunks)
+    #         }
+    #     except Exception as e:
+    #         return {
+    #             "status": "error",
+    #             "message": f"Error refreshing documents: {str(e)}",
+    #             "chunks_count": 0
+    #         }
+
     def refresh_documents(self) -> dict:
         """
         Re-ingest all documents from the rag-documents folder.
-        
-        Returns:
-            dict: Status of the refresh operation
+        Note: Due to filesystem restrictions in MCP environment, 
+        please run 'python ./tools/google/ingest.py' manually to refresh.
         """
-        try:
-            # Import and run the ingestion process
-            from .ingest import load_and_chunk, embed_and_store
-            
-            project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-            documents_dir = os.path.join(project_root, "tools", "google", "rag-documents")
-
-            chunks = load_and_chunk(documents_dir)
-            embed_and_store(chunks)
-            
-            return {
-                "status": "success",
-                "message": f"Successfully refreshed {len(chunks)} chunks",
-                "chunks_count": len(chunks)
-            }
-        except Exception as e:
-            return {
-                "status": "error",
-                "message": f"Error refreshing documents: {str(e)}",
-                "chunks_count": 0
-            }
+        return {
+            "status": "info",
+            "message": "Please run 'python ./tools/google/ingest.py' manually from your terminal to refresh the knowledge base. The MCP environment has filesystem restrictions.",
+            "chunks_count": 0
+        }

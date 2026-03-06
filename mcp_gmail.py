@@ -28,7 +28,7 @@ mcp.add_tool(gmail_tool.create_draft_reply, name='Gmail-Create-Draft-Reply', des
 
 # RAG tools
 mcp.add_tool(rag_tool.query_documents, name='RAG-Query-Documents', description='Query the knowledge base documents for information')
-mcp.add_tool(rag_tool.refresh_documents, name='RAG-Refresh-Documents', description='Re-ingest all documents from the rag-documents folder')
+# mcp.add_tool(rag_tool.refresh_documents, name='RAG-Refresh-Documents', description='Re-ingest all documents from the rag-documents folder')
 
 if __name__ == '__main__': # Stops MCP running on import
     mcp.run()
