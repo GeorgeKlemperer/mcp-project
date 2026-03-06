@@ -7,7 +7,7 @@ import chromadb
 
 load_dotenv()
 
-DOCUMENTS_DIR = "tools/google/rag-documents"
+DOCUMENTS_DIR = "rag-documents" # if running from root
 
 # --- Chunking ---
 

@@ -24,7 +24,7 @@ def retrieve(question, n_results=5):
         n_results=n_results,
     )
 
-    return results["rag-documents"][0], results["metadatas"][0]
+    return results["documents"][0], results["metadatas"][0]
 
 
 def generate(question, context_chunks, metadata):
