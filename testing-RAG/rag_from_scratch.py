@@ -12,7 +12,9 @@ import anthropic
 
 load_dotenv()
 
-DOCUMENTS_DIR = "rag-documents" # if running from root
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DOCUMENTS_DIR = os.path.join(SCRIPT_DIR, "rag-documents")
+
 INDEX_FILE = "index.json"
 EMBEDDINGS_FILE = "embeddings.npy"
 
