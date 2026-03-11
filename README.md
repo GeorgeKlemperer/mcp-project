@@ -113,6 +113,7 @@ mcp-project/
 │   └── google/
 │       ├── __init__.py
 │       ├── gmail_tools.py      # Gmail API wrapper
+│       ├── rag_tool.py         # RAG tools
 │       └── google_apis.py      # OAuth & service creation
 ├── mcp_gmail.py               # MCP server entry point
 ├── requirements.txt          # Python dependencies
